@@ -1,0 +1,90 @@
+.flip-card {
+  perspective: 1000px;
+  height: 200px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+
+.flip-card-front {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.flip-card-back {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transform: rotateY(180deg);
+}
+
+
+/* Additional styles for the card content  leadership flips */
+
+/* Perspective container */
+.perspective-team {
+  perspective: 1000px;
+}
+
+/* Inner flipping wrapper */
+.team-flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 280px; /* smaller height */
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  border-radius: 0.5rem; /* rounded-lg */
+}
+
+/* Flip on hover */
+.perspective-team:hover .team-flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Front and back sides */
+.team-flip-card-front,
+.team-flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 0.5rem;
+}
+
+/* Front side with image */
+.team-flip-card-front {
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+/* Back side with text */
+.team-flip-card-back {
+  transform: rotateY(180deg);
+  top: 0;
+  left: 0;
+  background-color: white;
+  box-sizing: border-box;
+  padding: 1.5rem;
+  overflow-y: auto;
+}

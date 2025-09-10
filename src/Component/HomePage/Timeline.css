@@ -1,0 +1,171 @@
+.timeline-container {
+    padding: 40px 20px;
+    background: #f8f9fd;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .timeline-heading {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 1.8em;
+    font-weight: 600;
+  }
+  
+  .timeline {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  /* Central Vertical Line */
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #e0e0e0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+  
+  .timeline-item {
+    display: flex;
+    align-items: center;
+    margin: 30px 0; /* Reduced from 60px */
+    position: relative;
+  }
+  
+  /* Left: circle left, text right */
+  .timeline-item.left {
+    flex-direction: row;
+  }
+  
+  .timeline-item.left .timeline-content {
+    margin-left: 15px; /* Reduced gap */
+  }
+  
+  /* Right: circle right, text left */
+  .timeline-item.right {
+    flex-direction: row-reverse;
+  }
+  
+  .timeline-item.right .timeline-content {
+    margin-right: 15px; /* Reduced gap */
+  }
+  
+  /* Circle Icon */
+  .timeline-circle {
+    width: 60px;
+    height: 60px;
+    border: 3px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    font-size: 22px;
+    color: #555;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+  
+  .timeline-circle:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Content Box */
+  .timeline-content {
+    max-width: 45%;
+  }
+  
+  .timeline-content h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.2em;
+    font-weight: 600;
+  }
+  
+  .timeline-content p {
+    margin: 0;
+    color: #555;
+    line-height: 1.4;
+    font-size: 0.9em;
+  }
+  
+/* Direct Line from one circle to the next (replaces center connector) */
+.process-connector {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    /* Border-top used for angled/diagonal line effect */
+    border-top: 2px solid transparent;
+    z-index: 1;
+    transform: translateY(-50%);
+  }
+  
+  /* For left-aligned item → next right-aligned item */
+  .timeline-item.left + .process-connector {
+    margin-left: calc(50% + 30px); /* from left circle */
+    width: calc(50% - 30px);       /* to center */
+    border-top-color: inherit;
+    border-top-style: solid;
+  }
+  
+  /* For right-aligned item → next left-aligned item */
+  .timeline-item.right + .process-connector {
+    margin-left: 50%;
+    width: calc(50% - 30px);
+    border-top-color: inherit;
+    border-top-style: solid;
+    transform: translateX(-100%);
+  }
+  
+  /* From left circle to center axis */
+  .timeline-item.left .connector {
+    left: calc(50% + 30px);
+    right: 50%;
+  }
+  
+  /* From right circle to center axis */
+  .timeline-item.right .connector {
+    right: calc(50% + 30px);
+    left: 50%;
+  }
+  
+  /* Responsive: Mobile View */
+  @media (max-width: 768px) {
+    .timeline::before {
+      left: 40px;
+    }
+  
+    .timeline-item {
+      margin: 20px 0;
+    }
+  
+    .timeline-circle {
+      position: absolute;
+      left: 40px;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      height: 50px;
+      font-size: 18px;
+    }
+  
+    .timeline-content {
+      margin-left: 70px !important;
+      max-width: calc(100% - 90px);
+      font-size: 0.9em;
+    }
+  
+    .connector {
+      height: 2px;
+      left: 50px;
+      right: 0;
+    }
+  }

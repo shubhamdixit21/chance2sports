@@ -1,0 +1,158 @@
+/* RoadmapCircle.css */
+
+.roadmap-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.rotation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.rotation-circle {
+  position: relative;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  animation: rotateCircle 25s linear infinite;
+}
+
+.rotation-circle.paused {
+  animation-play-state: paused;
+}
+
+.circle-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  transition: transform 0.3s ease;
+  z-index: 2;
+}
+
+.circle-item:focus {
+  outline: 2px solid white;
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+.card-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 1.25rem;
+  width: 250px;
+  border: 1px solid #eee;
+  animation: counterRotate 25s linear infinite;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.rotation-circle.paused .card-content {
+  animation-play-state: paused;
+}
+
+.card-content:hover {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.item-1 { top: 8%; left: 50%; }
+.item-2 { top: 50%; left: 96%; }
+.item-3 { top: 92%; left: 50%; }
+.item-4 { top: 50%; left: 4%; }
+
+.connecting-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+@keyframes rotateCircle {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes counterRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .rotation-circle {
+    width: 420px;
+    height: 420px;
+  }
+  
+  .card-content {
+    width: 200px;
+    padding: 1rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .rotation-circle {
+    width: 320px;
+    height: 320px;
+    animation-duration: 35s;
+  }
+  
+  .card-content {
+    width: 160px;
+    padding: 0.75rem;
+  }
+  
+  .item-1 { top: 10%; left: 50%; }
+  .item-2 { top: 50%; left: 90%; }
+  .item-3 { top: 90%; left: 50%; }
+  .item-4 { top: 50%; left: 10%; }
+}
+
+/* Small phones - switch to stacked layout */
+@media (max-width: 480px) {
+  .rotation-circle {
+    width: 100%;
+    height: auto;
+    border: none;
+    animation: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .rotation-circle.paused {
+    animation: none;
+  }
+  
+  .circle-item {
+    position: static;
+    transform: none;
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .card-content {
+    width: 100%;
+    animation: none;
+    max-width: 280px;
+  }
+  
+  .connecting-lines {
+    display: none;
+  }
+  
+  .item-1, .item-2, .item-3, .item-4 {
+    top: auto;
+    left: auto;
+  }
+}
