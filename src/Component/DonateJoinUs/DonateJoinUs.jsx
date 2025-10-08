@@ -23,6 +23,7 @@ const DonateJoinUs = () => {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitStatus, setSubmitStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Helper: Format custom label
   const getCountryLabel = (countryCode) => {
@@ -44,30 +45,38 @@ const DonateJoinUs = () => {
 
   // 📌 Repetitive number check helper
   const isRepetitiveRun = (phone, minRun = 5) => {
-  if (!phone) return false;
-  const onlyDigits = phone.replace(/\D/g, "");
-  // build regex for a run of the same digit repeated minRun times or more
-  const regex = new RegExp("(\\d)\\1{" + (minRun - 1) + ",}");
-  return regex.test(onlyDigits);
-};
+    if (!phone) return false;
+    const onlyDigits = phone.replace(/\D/g, "");
+    // build regex for a run of the same digit repeated minRun times or more
+    const regex = new RegExp("(\\d)\\1{" + (minRun - 1) + ",}");
+    return regex.test(onlyDigits);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // ⛔ Prevent double submission
+    if (loading) return;
+
+    setLoading(true); // ✅ Lock the button
 
     // Basic validation
     if (!formData.name || !formData.contact || !formData.email || !formData.amount) {
       setSubmitStatus("Please fill all required fields.");
+      setLoading(false);
       return;
     }
 
     // ✅ Check repetitive number before isValidPhoneNumber
     if (isRepetitiveRun(formData.contact)) {
       setSubmitStatus("Invalid contact number — repetitive digits are not allowed.");
+      setLoading(false);
       return;
     }
 
     // ✅ Phone number validation
     if (!isValidPhoneNumber(formData.contact)) {
       setSubmitStatus("Please enter a valid phone number.");
+      setLoading(false);
       return;
     }
 
@@ -79,32 +88,38 @@ const DonateJoinUs = () => {
       !formData.interestedOthers
     ) {
       setSubmitStatus("Please select at least one area of interest.");
+      setLoading(false);
       return;
     }
 
     // Simulate saving to CRM
     console.log("Form data saved to CRM:", formData);
 
-    // Send to Google Sheets
-    const result = await sendToGoogleSheets(formData);
-    if (result.result === "success") {
-      setIsSubmitted(true);
-      setSubmitStatus("Thank you! Our team will contact you shortly.");
-      setFormData({
-        name: "",
-        contact: "",
-        email: "",
-        interestedFellowship: false,
-        interestedDonation: false,
-        interestedNewCenter: false,
-        interestedOthers: false,
-        sponsorProgram: false,
-        sponsorAthlete: false,
-        sponsorDonation: false,
-        amount: "",
-      })
-    } else {
-      setSubmitStatus("There was an error submitting the form. Please try again.");
+    try {
+      const result = await sendToGoogleSheets(formData);
+      if (result.result === "success") {
+        setIsSubmitted(true);
+        setSubmitStatus("Thank you! Our team will contact you shortly.");
+        setFormData({
+          name: "",
+          contact: "",
+          email: "",
+          interestedFellowship: false,
+          interestedDonation: false,
+          interestedNewCenter: false,
+          interestedOthers: false,
+          sponsorProgram: false,
+          sponsorAthlete: false,
+          sponsorDonation: false,
+          amount: "",
+        });
+      } else {
+        setSubmitStatus("There was an error submitting the form. Please try again.");
+      }
+    } catch (err) {
+      setSubmitStatus("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false); // ✅ Unlock button
     }
   };
 
@@ -361,9 +376,11 @@ const DonateJoinUs = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition duration-200"
+              disabled={loading}
+              className={`w-full py-3 rounded-lg font-semibold transition duration-200 
+    ${loading ? "bg-[#d9d9df] cursor-not-allowed" : "bg-orange-500 text-white hover:bg-orange-600"}`}
             >
-              Submit Request
+              {loading ? "Submitting..." : "Submit Request"}
             </button>
 
             {/* Submission Status */}
