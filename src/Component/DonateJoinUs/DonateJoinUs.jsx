@@ -70,20 +70,39 @@ const DonateJoinUs = () => {
   };
 
   const sendToGoogleSheets = async (data) => {
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwBSmZ97MkIbLdyf2q8hOCKBByDSm7KU1ksOCoOp1oRViz5bqTC0INVXAw-4yENtZNS6w/exec";
+    const sheetBestURL = import.meta.env.VITE_SHEETBEST_URL;
+    console.log(sheetBestURL)
+    // Add date here or in the sheet if needed
+    const dataWithDate = {
+      ...data,
+      amount: String(data.amount),
+      date: new Date().toLocaleString("en-US", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      }),
+    };
 
     try {
-      const response = await fetch(scriptURL, {
+      const response = await fetch(sheetBestURL, {
         method: "POST",
-        body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(dataWithDate),
       });
 
-      const result = await response.json();
-      console.log("Success:", result);
-      return result;
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Success:", result);
+        return { result: "success" };
+      } else {
+        throw new Error("Network response was not ok.");
+      }
     } catch (error) {
       console.error("Error!", error.message);
       return { result: "error" };
@@ -159,16 +178,24 @@ const DonateJoinUs = () => {
               <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-2">
                 Contact Number <span className="text-red-500">*</span>
               </label>
-              <input
-                type="tel"
-                id="contact"
-                name="contact"
-                value={formData.contact}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="e.g. +1234567890"
-              />
+              <div className="flex">
+                {/* Country Code Box */}
+                <div className="flex items-center px-4 py-3 border border-gray-300 rounded-l-lg bg-gray-100 text-gray-700">
+                  +91
+                </div>
+
+                {/* Contact Number Input */}
+                <input
+                  type="tel"
+                  id="contact"
+                  name="contact"
+                  value={formData.contact}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 border-t border-b border-r border-gray-300 rounded-r-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="e.g. 9876543210"
+                />
+              </div>
             </div>
 
             {/* Email */}
