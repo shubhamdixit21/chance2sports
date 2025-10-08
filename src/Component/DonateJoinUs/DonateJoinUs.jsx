@@ -64,19 +64,19 @@ const DonateJoinUs = () => {
     if (result.result === "success") {
       setIsSubmitted(true);
       setSubmitStatus("Thank you! Our team will contact you shortly.");
-      setFormData({
-        name: "",
-        contact: "",
-        email: "",
-        interestedFellowship: false,
-        interestedDonation: false,
-        interestedNewCenter: false,
-        interestedOthers: false,
-        sponsorProgram: false,
-        sponsorAthlete: false,
-        sponsorDonation: false,
-        amount: "",
-      })
+      // setFormData({
+      //   name: "",
+      //   contact: "",
+      //   email: "",
+      //   interestedFellowship: false,
+      //   interestedDonation: false,
+      //   interestedNewCenter: false,
+      //   interestedOthers: false,
+      //   sponsorProgram: false,
+      //   sponsorAthlete: false,
+      //   sponsorDonation: false,
+      //   amount: "",
+      // })
     } else {
       setSubmitStatus("There was an error submitting the form. Please try again.");
     }
