@@ -31,7 +31,7 @@ const DonateJoinUs = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Basic validation
@@ -58,8 +58,36 @@ const DonateJoinUs = () => {
 
     // Simulate saving to CRM
     console.log("Form data saved to CRM:", formData);
-    setIsSubmitted(true);
-    setSubmitStatus("Thank you! Our team will contact you shortly.");
+
+    // Send to Google Sheets
+    const result = await sendToGoogleSheets(formData);
+    if (result.result === "success") {
+      setIsSubmitted(true);
+      setSubmitStatus("Thank you! Our team will contact you shortly.");
+    } else {
+      setSubmitStatus("There was an error submitting the form. Please try again.");
+    }
+  };
+
+  const sendToGoogleSheets = async (data) => {
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwBSmZ97MkIbLdyf2q8hOCKBByDSm7KU1ksOCoOp1oRViz5bqTC0INVXAw-4yENtZNS6w/exec";
+
+    try {
+      const response = await fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+      console.log("Success:", result);
+      return result;
+    } catch (error) {
+      console.error("Error!", error.message);
+      return { result: "error" };
+    }
   };
 
   return (
@@ -277,9 +305,8 @@ const DonateJoinUs = () => {
             {/* Submission Status */}
             {submitStatus && (
               <p
-                className={`mt-4 text-center text-sm ${
-                  submitStatus.includes("Thank") ? "text-green-600" : "text-red-500"
-                }`}
+                className={`mt-4 text-center text-sm ${submitStatus.includes("Thank") ? "text-green-600" : "text-red-500"
+                  }`}
               >
                 {submitStatus}
               </p>
