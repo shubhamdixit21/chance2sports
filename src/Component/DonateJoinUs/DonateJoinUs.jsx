@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import Header from "../../Layout/Header";
 import Footer from "../../Layout/Footer";
+import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
+import 'react-phone-number-input/style.css';
+import countries from "country-telephone-data";
 
 const DonateJoinUs = () => {
   // Form state
@@ -21,6 +24,15 @@ const DonateJoinUs = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitStatus, setSubmitStatus] = useState("");
 
+  // Helper: Format custom label
+  const getCountryLabel = (countryCode) => {
+    const country = countries.allCountries.find(
+      (c) => c.iso2.toUpperCase() === countryCode
+    );
+    if (!country) return countryCode;
+    return `+${country.dialCode} - ${country.name} - ${country.iso2.toUpperCase()}`;
+  };
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -30,7 +42,14 @@ const DonateJoinUs = () => {
     }));
   };
 
-  // Handle form submission
+  // 📌 Repetitive number check helper
+  const isRepetitiveRun = (phone, minRun = 5) => {
+  if (!phone) return false;
+  const onlyDigits = phone.replace(/\D/g, "");
+  // build regex for a run of the same digit repeated minRun times or more
+  const regex = new RegExp("(\\d)\\1{" + (minRun - 1) + ",}");
+  return regex.test(onlyDigits);
+};
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -40,8 +59,15 @@ const DonateJoinUs = () => {
       return;
     }
 
-    if (!/^\d+$/.test(formData.amount)) {
-      setSubmitStatus("Please enter a valid amount.");
+    // ✅ Check repetitive number before isValidPhoneNumber
+    if (isRepetitiveRun(formData.contact)) {
+      setSubmitStatus("Invalid contact number — repetitive digits are not allowed.");
+      return;
+    }
+
+    // ✅ Phone number validation
+    if (!isValidPhoneNumber(formData.contact)) {
+      setSubmitStatus("Please enter a valid phone number.");
       return;
     }
 
@@ -64,19 +90,19 @@ const DonateJoinUs = () => {
     if (result.result === "success") {
       setIsSubmitted(true);
       setSubmitStatus("Thank you! Our team will contact you shortly.");
-      // setFormData({
-      //   name: "",
-      //   contact: "",
-      //   email: "",
-      //   interestedFellowship: false,
-      //   interestedDonation: false,
-      //   interestedNewCenter: false,
-      //   interestedOthers: false,
-      //   sponsorProgram: false,
-      //   sponsorAthlete: false,
-      //   sponsorDonation: false,
-      //   amount: "",
-      // })
+      setFormData({
+        name: "",
+        contact: "",
+        email: "",
+        interestedFellowship: false,
+        interestedDonation: false,
+        interestedNewCenter: false,
+        interestedOthers: false,
+        sponsorProgram: false,
+        sponsorAthlete: false,
+        sponsorDonation: false,
+        amount: "",
+      })
     } else {
       setSubmitStatus("There was an error submitting the form. Please try again.");
     }
@@ -84,7 +110,6 @@ const DonateJoinUs = () => {
 
   const sendToGoogleSheets = async (data) => {
     const sheetBestURL = import.meta.env.VITE_SHEETBEST_URL;
-    console.log(sheetBestURL)
     // Add date here or in the sheet if needed
     const dataWithDate = {
       ...data,
@@ -186,27 +211,26 @@ const DonateJoinUs = () => {
               />
             </div>
 
-            {/* Contact Number */}
+            {/* 📞 Phone Input */}
             <div className="mb-6">
               <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-2">
                 Contact Number <span className="text-red-500">*</span>
               </label>
-              <div className="flex">
-                {/* Country Code Box */}
-                <div className="flex items-center px-4 py-3 border border-gray-300 rounded-l-lg bg-gray-100 text-gray-700">
-                  +91
-                </div>
-
-                {/* Contact Number Input */}
-                <input
-                  type="tel"
-                  id="contact"
-                  name="contact"
+              <div className="flex justify-center mt-10">
+                <PhoneInput
+                  placeholder="Enter phone number"
                   value={formData.contact}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border-t border-b border-r border-gray-300 rounded-r-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="e.g. 9876543210"
+                  onChange={(value) => setFormData((prev) => ({ ...prev, contact: value || "" }))}
+                  defaultCountry="IN"
+                  international
+                  countrySelectProps={{
+                    renderOption: (props, option) => (
+                      <div {...props}>{getCountryLabel(option.value)}</div>
+                    ),
+                    renderButtonValue: ({ value }) =>
+                      value ? getCountryLabel(value) : "Select country",
+                  }}
+                  className="w-full px-2 py-3 border border-gray-300 rounded-lg"
                 />
               </div>
             </div>
